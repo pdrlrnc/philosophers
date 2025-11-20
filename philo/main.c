@@ -37,13 +37,16 @@ int	main(void)
 void	*thread_func(void *arg)
 {
 	t_shared *shared;
+	int	i;
 	
 	shared = (t_shared *)arg;
-	while (shared->counter < 10000)
+	i = 0;
+	while (i < 10000)
 	{
 		pthread_mutex_lock(&shared->lock);
 		shared->counter++;
 		pthread_mutex_unlock(&shared->lock);
+		i++;
 	}
 	return (NULL);
 }
