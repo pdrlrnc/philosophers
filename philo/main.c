@@ -12,25 +12,11 @@
 
 #include "philo.h"
 
-int	main(void)
+int	main(int argc, char **argv)
 {
-	pthread_t	t1;
-	pthread_t	t2;
-	t_shared	shared;
-
-	shared.counter = 0;
-	pthread_mutex_init(&shared.lock, NULL);
-
-	pthread_create(&t1, NULL, thread_func, &shared);
-	pthread_create(&t2, NULL, thread_func, &shared);
-
-	pthread_join(t1, NULL);
-	pthread_join(t2, NULL);
-
-	pthread_mutex_destroy(&shared.lock);
-
-	printf("counter: %d\n", shared.counter);
-	
+	t_data	*data;
+	data = parser(argc, argv);
+	free(data);
 	return (0);
 }
 

@@ -11,16 +11,21 @@
 # **************************************************************************** #
 
 NAME		=	philo
-SRC_FILES	=	main
-
-INCLUDES	=	philo
+SRC_FILES	=	main parser
 
 OBJ_DIR		=	obj
+SRC_DIR		=	.
 
+LIBFT_URL	=	https://github.com/pdrlrnc/libft.git
+LIBFT_DIR	=	libft
+LIBFT_LIB	=	$(LIBFT_DIR)/libft.a
+LIBFT_HEADER	=	$(LIBFT_DIR)/libft.h
 
-CC			=	cc -g -O0
-CFLAGS		=	-Wall -Wextra -Werror -I$(INCLUDES) -MMD -MP
-RM			=	rm -rf
+INCLUDES	=	-I. -I$(LIBFT_DIR)
+
+CC		=	cc -g -O3
+CFLAGS		=	-Wall -Wextra -Werror -pthread $(INCLUDES) -MMD -MP
+RM		=	rm -rf
 
 RED=\033[0;31m
 GREEN	    := \033[92;5;118m
@@ -34,31 +39,47 @@ BLINK       := \033[5m
 CURSIVE	    := \033[33;3m
 DEF_COLOUR=\033[0m
 
-SRC			=	$(addsuffix .c, $(SRC_FILES)))
+SRC 		        =	$(addprefix $(SRC_DIR)/, $(addsuffix .c, $(SRC_FILES)))
 OBJ			=	$(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRC_FILES)))
 DEP			=	$(addprefix $(OBJ_DIR)/, $(addsuffix .d, $(SRC_FILES)))
 
 .PHONY: all clean fclean re
 
-all: $(NAME)
+all: $(LIBFT_DIR) $(NAME)
+	@echo "	\n\
+		$(RED) _______ _   _ ___          _________ ___ _______ _   _ _____ __________ $(DEF_COLOUR)\n\
+		$(ORANGE)(   _   ) | | (   )   /\   / _ \  ___) _ (   _   ) | | |  ___)  _ \  ___)$(DEF_COLOUR)\n\
+		$(YELLOW) | | | || |_| || |   /  \ | | | \ \ | | | | | | || |_| | |_  | |_) ) \   $(DEF_COLOUR)\n\
+		$(GREEN) | | | ||  _  || |  / /\ \| | | |> >| | | | | | ||  _  |  _) |  __/ > >  $(DEF_COLOUR)\n\
+		$(BLUE) | | | || | | || | / /  \ \ |_| / /_| |_| | | | || | | | |___| |   / /__ $(DEF_COLOUR)\n\
+		$(INDIGO) |_| |_||_| |_(___)_/    \_\___/_____)___/|_| |_||_| |_|_____)_|  /_____)$(DEF_COLOUR)\n "
 
-$(NAME): $(OBJ)
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(NAME): $(OBJ) $(LIBFT_LIB)
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT_LIB) -o $(NAME)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@ctags -R .
 
 $(OBJ_DIR):
 	@echo "Compiling philosophers..."
-	@mkdir -p $@
+	@mkdir -p $(OBJ_DIR)
 
+$(LIBFT_DIR):
+	@git clone --quiet --depth 1 $(LIBFT_URL) $(LIBFT_DIR)
+
+$(LIBFT_LIB): | $(LIBFT_DIR) headers
+	@$(MAKE) --no-print-directory -C $(LIBFT_DIR)
+
+headers: $(LIBFT_HEADER) philo.h
 
 clean:
 	@$(RM) $(OBJ_DIR)
 	@$(RM) tags
 
 fclean: clean
+	@$(RM) -rf $(LIBFT_DIR)
 	@$(RM) $(NAME)
 
 re: fclean all
