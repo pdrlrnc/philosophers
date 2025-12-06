@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME		=	philo
-SRC_FILES	=	main parser forks mutexes philos
+SRC_FILES	=	main parser forks mutexes philos simulation
 
 OBJ_DIR		=	obj
 SRC_DIR		=	.

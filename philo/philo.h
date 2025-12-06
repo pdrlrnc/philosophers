@@ -44,9 +44,10 @@ typedef struct s_data
 	int		time_to_eat;
 	int		time_to_sleep;
 	int		number_of_eats;
+	int		ended_sim;
+	t_mtx		mtx;
 	t_fork	**forks;
 	t_philos	**philos;
-	int		philo_dead;
 }	t_data;
 
 typedef enum e_ops
@@ -57,11 +58,8 @@ typedef enum e_ops
 	DESTROY
 }	t_ops;
 
-void	*thread_func(void *arg);
+//parser.c
 t_data	*parser(int argc, char **argv);
-int	check_if_numeric(char **argv);
-int	check_nb(char *nb_str);
-t_data	*final_data_check(t_data *data);
 
 //forks.c
 t_fork	**init_forks(t_data *data);
@@ -69,10 +67,14 @@ t_fork	**fork_err(t_data *data, int i);
 
 //mutexes.c
 int	mutex(t_mtx mut, t_ops op);
+t_mtx	write_lock(void);
 
 //philos.c
 t_philos	**init_philos(t_data *data);
 t_philos	**philos_err(t_data *data, int i);
+
+//simulation.c
+int	ended_sim(t_data *data);
 
 
 #endif

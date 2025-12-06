@@ -12,28 +12,7 @@
 
 #include "philo.h"
 
-t_data	*parser(int argc, char **argv)
-{
-	t_data	*data;
-
-	if (argc < 5 || argc > 6)
-		return (write(STDERR_FILENO, "Required arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n", 125), NULL);
-	if (!check_if_numeric(argv))
-		return (write(STDERR_FILENO, "Arguments can only be numeric\n", 30), NULL);
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	data->number_of_philosophers = check_nb(argv[1]);
-	data->time_to_die = check_nb(argv[2]);
-	data->time_to_eat = check_nb(argv[3]);
-	data->time_to_sleep = check_nb(argv[4]);
-	data->number_of_eats = -3;
-	if (argv[5])
-		data->number_of_eats = check_nb(argv[5]);
-	return (final_data_check(data));
-}
-
-int	check_if_numeric(char **argv)
+static int	check_if_numeric(char **argv)
 {
 	int	i;
 
@@ -47,32 +26,66 @@ int	check_if_numeric(char **argv)
 	return (1);
 }
 
-int	check_nb(char *nb_str)
+static int	check_if_pos(char **argv)
 {
-	if (*nb_str == '-' || (*nb_str == '0' && ft_strlen(nb_str) == 1))
-		return (-1);
-	if (ft_check_for_overflow(nb_str))
-		return (-2);
-	return (ft_atoi(nb_str));
+	int	i;
+
+	i = 1;
+	while (argv[i])
+	{
+		if (*argv[i] == '-' || (*argv[i] == '0' && ft_strlen(argv[i]) == 1))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-t_data	*final_data_check(t_data *data)
+static int	check_if_overflow(char **argv)
 {
-	if (data->number_of_philosophers == -1 || data->time_to_die == -1 
-		|| data->time_to_eat == -1 || data->time_to_sleep == -1 
-		|| data->number_of_eats == -1)
+	int	i;
+
+	i = 1;
+	while (argv[i])
 	{
-		write(STDERR_FILENO, "Arguments should be >= 1\n", 25);
-		free(data);
-		data = NULL;
+		if (ft_check_for_overflow(argv[i]))
+			return (0);
+		i++;
 	}
-	else if (data->number_of_philosophers == -2 || data->time_to_die == -2 
-		|| data->time_to_eat == -2 || data->time_to_sleep == -2 
-		|| data->number_of_eats == -2)
+	return (1);
+}
+
+static void	atoi_input(t_data *data, char **argv)
+{	
+	data->number_of_philosophers = ft_atoi(argv[1]);
+	data->time_to_die = ft_atoi(argv[2]);
+	data->time_to_eat = ft_atoi(argv[3]);
+	data->time_to_sleep = ft_atoi(argv[4]);
+	data->number_of_eats = 0;
+	if (argv[5])
+		data->number_of_eats = ft_atoi(argv[5]);
+}
+
+t_data	*parser(int argc, char **argv)
+{
+	t_data	*data;
+
+	if (argc < 5 || argc > 6)
+		return (write(STDERR_FILENO, "Required arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n", 125), NULL);
+	if (!check_if_numeric(argv))
+		return (write(STDERR_FILENO, "Arguments can only be numeric\n", 30), NULL);
+	if (!check_if_pos(argv))
+		return (write(STDERR_FILENO, "Arguments need to be >= 1\n", 26), NULL);
+	if (!check_if_overflow(argv))
+		return (write(STDERR_FILENO, "Arguments should be <= MAX_INT (2147483647)\n", 44), NULL);
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (write(STDERR_FILENO, "Error malloc'ing data struct\n", 29), NULL);
+	if (mutex(data->mtx, CREATE))
 	{
-		write(STDERR_FILENO, "Arguments should be <= MAX_INT (2147483647)\n", 44);
-		free(data);
-		data = NULL;
+		write(STDERR_FILENO, "Error creating data mutex\n", 26);
+		return (free(data), NULL);
 	}
+	data->ended_sim = 0;
+	atoi_input(data, argv);
 	return (data);
 }
