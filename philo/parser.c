@@ -55,11 +55,11 @@ static int	check_if_overflow(char **argv)
 }
 
 static void	atoi_input(t_data *data, char **argv)
-{	
+{
 	data->number_of_philosophers = ft_atoi(argv[1]);
-	data->time_to_die = ft_atoi(argv[2]);
-	data->time_to_eat = ft_atoi(argv[3]);
-	data->time_to_sleep = ft_atoi(argv[4]);
+	data->time_to_die = ft_atoi(argv[2]) * 1000;
+	data->time_to_eat = ft_atoi(argv[3]) * 1000;
+	data->time_to_sleep = ft_atoi(argv[4]) * 1000;
 	data->number_of_eats = 0;
 	if (argv[5])
 		data->number_of_eats = ft_atoi(argv[5]);
@@ -70,19 +70,19 @@ t_data	*parser(int argc, char **argv)
 	t_data	*data;
 
 	if (argc < 5 || argc > 6)
-		return (write(STDERR_FILENO, "Required arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n", 125), NULL);
+		return (write(STDERR_FILENO, ERR_1, 125), NULL);
 	if (!check_if_numeric(argv))
-		return (write(STDERR_FILENO, "Arguments can only be numeric\n", 30), NULL);
+		return (write(STDERR_FILENO, ERR_2, 30), NULL);
 	if (!check_if_pos(argv))
-		return (write(STDERR_FILENO, "Arguments need to be >= 1\n", 26), NULL);
+		return (write(STDERR_FILENO, ERR_3, 26), NULL);
 	if (!check_if_overflow(argv))
-		return (write(STDERR_FILENO, "Arguments should be <= MAX_INT (2147483647)\n", 44), NULL);
+		return (write(STDERR_FILENO, ERR_4, 44), NULL);
 	data = malloc(sizeof(t_data));
 	if (!data)
-		return (write(STDERR_FILENO, "Error malloc'ing data struct\n", 29), NULL);
+		return (write(STDERR_FILENO, ERR_5, 29), NULL);
 	if (mutex(data->mtx, CREATE))
 	{
-		write(STDERR_FILENO, "Error creating data mutex\n", 26);
+		write(STDERR_FILENO, ERR_6, 26);
 		return (free(data), NULL);
 	}
 	data->ended_sim = 0;

@@ -28,7 +28,8 @@ t_philos	**init_philos(t_data *data)
 		(*(data->philos + i))->id = i;
 		(*(data->philos + i))->times_ate = 0;
 		if (!i)
-			(*(data->philos + i))->left_fork = *(data->forks + data->number_of_philosophers - 1);
+			(*(data->philos + i))->left_fork = *(data->forks + data
+					->number_of_philosophers - 1);
 		else
 			(*(data->philos + i))->left_fork = *(data->forks + i - 1);
 		(*(data->philos + i))->right_fork = *(data->forks + i);

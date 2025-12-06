@@ -15,7 +15,7 @@
 int	ended_sim(t_data *data)
 {
 	int	ended_sim;
-	
+
 	mutex(data->mtx, LOCK);
 	ended_sim = data->ended_sim;
 	mutex(data->mtx, UNLOCK);

@@ -19,7 +19,15 @@
 # include <sys/time.h>
 # include "libft.h"
 
-typedef	pthread_mutex_t t_mtx;
+# define ERR_1 "Required arguments: number_of_philosophers time_to_die time_to_eat \
+time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
+# define ERR_2 "Arguments can only be numeric\n"
+# define ERR_3 "Arguments need to be >= 1\n"
+# define ERR_4 "Arguments should be <= MAX_INT (2147483647)\n"
+# define ERR_5 "Error malloc'ing data struct\n"
+# define ERR_6 "Error creating data mutex\n"
+
+typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
 {
@@ -29,7 +37,7 @@ typedef struct s_fork
 
 typedef struct s_philos
 {
-	int	id;
+	int		id;
 	t_fork	*left_fork;
 	t_fork	*right_fork;
 	long	time_last_meal;
@@ -39,14 +47,14 @@ typedef struct s_philos
 
 typedef struct s_data
 {
-	int		number_of_philosophers;
-	int		time_to_die;
-	int		time_to_eat;
-	int		time_to_sleep;
-	int		number_of_eats;
-	int		ended_sim;
+	int			number_of_philosophers;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
+	int			number_of_eats;
+	int			ended_sim;
 	t_mtx		mtx;
-	t_fork	**forks;
+	t_fork		**forks;
 	t_philos	**philos;
 }	t_data;
 
@@ -59,22 +67,21 @@ typedef enum e_ops
 }	t_ops;
 
 //parser.c
-t_data	*parser(int argc, char **argv);
+t_data		*parser(int argc, char **argv);
 
 //forks.c
-t_fork	**init_forks(t_data *data);
-t_fork	**fork_err(t_data *data, int i);
+t_fork		**init_forks(t_data *data);
+t_fork		**fork_err(t_data *data, int i);
 
 //mutexes.c
-int	mutex(t_mtx mut, t_ops op);
-t_mtx	write_lock(void);
+int			mutex(t_mtx mut, t_ops op);
+t_mtx		write_lock(void);
 
 //philos.c
 t_philos	**init_philos(t_data *data);
 t_philos	**philos_err(t_data *data, int i);
 
 //simulation.c
-int	ended_sim(t_data *data);
-
+int			ended_sim(t_data *data);
 
 #endif

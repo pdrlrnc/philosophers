@@ -23,7 +23,7 @@ int	mutex(t_mtx mut, t_ops op)
 
 t_mtx	write_lock(void)
 {
-	static t_mtx mtx;
+	static t_mtx	mtx;
 
 	return (mtx);
 }

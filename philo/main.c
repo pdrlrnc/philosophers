@@ -15,6 +15,7 @@
 int	main(int argc, char **argv)
 {
 	t_data	*data;
+
 	data = parser(argc, argv);
 	if (!data)
 		return (1);
