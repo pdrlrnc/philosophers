@@ -19,12 +19,13 @@ int	main(int argc, char **argv)
 	data = parser(argc, argv);
 	if (!data)
 		return (1);
-	if (mutex(write_lock(), CREATE))
+	if (pthread_mutex_init(write_lock(), NULL))
 		return (write(STDERR_FILENO, "Error creating write mutex\n", 27), 1);
 	if (!init_forks(data))
 		return (write(STDERR_FILENO, "Error creating forks\n", 21), 1);
 	if (!init_philos(data))
 		return (write(STDERR_FILENO, "Error creating philosophers\n", 28), 1);
+	print_table(data);
 	while (!ended_sim(data))
 	{
 		simulate(data);

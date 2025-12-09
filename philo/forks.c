@@ -26,7 +26,7 @@ t_fork	**init_forks(t_data *data)
 		if (!(*(data->forks + i)))
 			return (fork_err(data, i));
 		(*(data->forks + i))->id = i;
-		if (mutex((*(data->forks + i))->mtx, CREATE))
+		if (pthread_mutex_init(&((*(data->forks + i))->mtx), NULL))
 			return (free(*(data->forks + i)), fork_err(data, i));
 		i++;
 	}
@@ -37,7 +37,7 @@ t_fork	**fork_err(t_data *data, int i)
 {
 	while (--i >= 0)
 	{
-		mutex((*(data->forks + i))->mtx, DESTROY);
+		pthread_mutex_destroy(&((*(data->forks + i))->mtx));
 		free(*(data->forks + i));
 	}
 	free(data->forks);

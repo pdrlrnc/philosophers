@@ -27,17 +27,21 @@ time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
 # define ERR_5 "Error malloc'ing data struct\n"
 # define ERR_6 "Error creating data mutex\n"
 
+# define ACT_1 " is eating\n"
+
 typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
 {
 	long	id;
+	int	in_use;
 	t_mtx	mtx;
 }	t_fork;
 
 typedef struct s_referee
 {
 	int			id;
+	int			still_going;
 	t_mtx	mtx;
 }	t_referee;
 
@@ -50,6 +54,9 @@ typedef struct s_philos
 	long	time_last_meal;
 	long	time_this_meal;
 	long	times_ate;
+	long	time_to_eat;
+	long	time_to_sleep;
+	long	time_to_die;
 	t_mtx	mtx;
 }	t_philos;
 
@@ -59,9 +66,11 @@ typedef struct s_data
 	long		time_to_die;
 	long		time_to_eat;
 	long		time_to_sleep;
+	long		started_sim_time;
 	int			number_of_eats;
 	int			ended_sim;
 	t_mtx		mtx;
+	t_mtx		write_mtx;
 	t_fork		**forks;
 	t_philos	**philos;
 	t_referee	**referees;
@@ -72,7 +81,9 @@ typedef enum e_ops
 	CREATE,
 	LOCK,
 	UNLOCK,
-	DESTROY
+	DESTROY,
+	JOIN,
+	DETACH
 }	t_ops;
 
 //parser.c
@@ -82,21 +93,35 @@ t_data		*parser(int argc, char **argv);
 t_fork		**init_forks(t_data *data);
 t_fork		**fork_err(t_data *data, int i);
 
-//mutexes.c
-int			mutex(t_mtx mut, t_ops op);
-t_mtx		write_lock(void);
-
 //philos.c
 t_philos	**init_philos(t_data *data);
 t_philos	**philos_err(t_data *data, int i);
 int			create_philos(t_data *data);
+void		add_params_to_philo(t_data *data, t_philos *philo);
+
+//philos2.c
+void		eat(t_philos *philo);
+void		_sleep(t_philos *philo);
+void		think(t_philos *philo);
 
 //simulation.c
 int			ended_sim(t_data *data);
 void		simulate(t_data *data);
+int			check_if_rip(t_data *data, int i);
+void		*run(void *arg);
 
 
 //time.c
 long		now(void);
+
+//threads.c
+int			thread(pthread_t *thread, void *(*f)(void *), t_philos *philo, t_ops op);
+
+//writes.c
+t_mtx		*write_lock(void);
+
+
+//_debug.c -> delete when finished
+void		print_table(t_data *data);
 
 #endif

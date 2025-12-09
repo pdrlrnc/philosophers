@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME		=	philo
-SRC_FILES	=	main parser forks mutexes philos simulation time
+SRC_FILES	=	main parser forks philos philos2 simulation time threads writes _debug
 
 OBJ_DIR		=	obj
 SRC_DIR		=	.

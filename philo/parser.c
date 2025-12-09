@@ -57,9 +57,9 @@ static int	check_if_overflow(char **argv)
 static void	atoi_input(t_data *data, char **argv)
 {
 	data->number_of_philosophers = ft_atoi(argv[1]);
-	data->time_to_die = ft_atoi(argv[2]) * 1000;
-	data->time_to_eat = ft_atoi(argv[3]) * 1000;
-	data->time_to_sleep = ft_atoi(argv[4]) * 1000;
+	data->time_to_die = ft_atoi(argv[2]) * 1000000;
+	data->time_to_eat = ft_atoi(argv[3]) * 1000000;
+	data->time_to_sleep = ft_atoi(argv[4]) * 1000000;
 	data->number_of_eats = 0;
 	if (argv[5])
 		data->number_of_eats = ft_atoi(argv[5]);
@@ -80,12 +80,12 @@ t_data	*parser(int argc, char **argv)
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (write(STDERR_FILENO, ERR_5, 29), NULL);
-	if (mutex(data->mtx, CREATE))
-	{
-		write(STDERR_FILENO, ERR_6, 26);
-		return (free(data), NULL);
-	}
 	data->ended_sim = 0;
+	if (pthread_mutex_init(&data->mtx, NULL))
+	{
+		free(data);
+		return (write(STDERR_FILENO, ERR_6, 26), NULL);
+	}
 	atoi_input(data, argv);
 	return (data);
 }

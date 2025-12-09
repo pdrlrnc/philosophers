@@ -29,11 +29,11 @@ t_philos	**init_philos(t_data *data)
 		else
 			(*(data->philos + i))->left_fork = *(data->forks + i - 1);
 		(*(data->philos + i))->right_fork = *(data->forks + i);
-		if (mutex((*(data->philos + i))->mtx, CREATE))
+		if (pthread_mutex_init(&((*(data->philos + i))->mtx), NULL))
 			return (free(*(data->philos + i)), philos_err(data, i));
-		if (mutex((*(data->referees + i))->mtx, CREATE))
+		if (pthread_mutex_init(&((*(data->referees + i))->mtx), NULL))
 		{
-			mutex((*(data->philos + i))->mtx, DESTROY);
+			pthread_mutex_destroy(&((*(data->philos + i))->mtx));
 			return (free(*(data->philos + i)), philos_err(data, i));
 		}
 		i++;
@@ -45,9 +45,9 @@ t_philos	**philos_err(t_data *data, int i)
 {
 	while (--i >= 0)
 	{
-		mutex((*(data->philos + i))->mtx, DESTROY);
+		pthread_mutex_destroy(&((*(data->philos + i))->mtx));
 		if (*(data->referees + i))
-			mutex((*(data->referees + i))->mtx, DESTROY);
+			pthread_mutex_destroy(&((*(data->referees + i))->mtx));
 		free(*(data->philos + i));
 		if (*(data->referees + i))
 			free(*(data->referees + i));
@@ -61,8 +61,8 @@ int	create_philos(t_data *data)
 {
 	int	i;
 
-	data->philos = malloc(data->number_of_philosophers * sizeof(t_philos *));
-	data->referees = malloc(data->number_of_philosophers * sizeof(t_referee *));
+	data->philos = malloc((data->number_of_philosophers + 1) * sizeof(t_philos *));
+	data->referees = malloc((data->number_of_philosophers + 1) * sizeof(t_referee *));
 	if (!data->philos)
 		return (fork_err(data, data->number_of_philosophers), 0);
 	if (!data->referees)
@@ -80,7 +80,17 @@ int	create_philos(t_data *data)
 		if (!*(data->referees + i))
 			return (philos_err(data, i + 1), 0);
 		(*(data->referees + i))->id = i;
+		add_params_to_philo(data, *(data->philos + i));
 		i++;
-	}	
+	}
+	data->philos[i] = NULL;
+	data->referees[i] = NULL;
 	return (1);
+}
+
+void	add_params_to_philo(t_data *data, t_philos *philo)
+{
+	philo->time_to_eat = data->time_to_eat;
+	philo->time_to_sleep = data->time_to_sleep;
+	philo->time_to_die = data->time_to_die;
 }
