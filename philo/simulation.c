@@ -21,3 +21,24 @@ int	ended_sim(t_data *data)
 	mutex(data->mtx, UNLOCK);
 	return (ended_sim);
 }
+
+void	simulate(t_data *data)
+{
+	int		i;
+	long	time;
+
+	time = now();
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
+		mutex(data->philos[i]->mtx, LOCK);
+		//eating
+		usleep(data->time_to_eat);
+		data->philos[i]->time_this_meal = time;
+		data->philos[i]->times_ate++;
+		//sleep
+		usleep(data->time_to_sleep);
+		mutex(data->philos[i]->mtx, UNLOCK);
+		i++;
+	}
+}

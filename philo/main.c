@@ -27,6 +27,8 @@ int	main(int argc, char **argv)
 		return (write(STDERR_FILENO, "Error creating philosophers\n", 28), 1);
 	while (!ended_sim(data))
 	{
+		simulate(data);
+		usleep(500);
 		return (1);
 	}
 	return (0);
