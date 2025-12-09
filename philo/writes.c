@@ -17,3 +17,11 @@ t_mtx	*write_lock(void)
 	static t_mtx	mtx;
 	return (&mtx);
 }
+
+/*
+t_data *data_factory(void)
+{
+	static data	data;
+	return (&data);
+}
+*/

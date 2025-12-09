@@ -32,7 +32,6 @@ void	simulate(t_data *data)
 	{
 		thread(&data->philos[i]->thread, run, data->philos[i], CREATE);
 		i++;
-
 	}
 	i = 0;
 	while (i < data->number_of_philosophers)
@@ -49,9 +48,7 @@ void	*run(void *arg)
 	philo = (t_philos *)arg;
 	while (1)
 	{
-		pthread_mutex_lock(&philo->mtx);
 		eat(philo);
-		pthread_mutex_unlock(&philo->mtx);
 		_sleep(philo);
 	}
 	return (NULL);
