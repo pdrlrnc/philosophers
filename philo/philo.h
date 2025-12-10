@@ -32,6 +32,8 @@ time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
 # define ACT_3 " is sleeping\n"
 # define ACT_4 " is thinking\n"
 
+# define RIP " is ded omg rip\n"
+
 typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
@@ -93,6 +95,7 @@ typedef enum e_ops
 
 //parser.c
 t_data		*parser(int argc, char **argv);
+void		atoi_input(t_data *data, char **argv);
 
 //forks.c
 t_fork		**init_forks(t_data *data);
@@ -112,17 +115,17 @@ void		take_forks(t_philos *philo);
 void		drop_forks(t_philos *philo);
 
 //simulation.c
-int			ended_sim(t_data *data);
+int			ended_sim(void);
+void		end_sim(void);
 void		simulate(t_data *data);
-int			check_if_rip(t_data *data, int i);
-void		*run(void *arg);
-int			check_if_dead(t_data *data);
-void		*ref(void *arg);
+int			check_if_dead(t_philos *philo);
+void			*run(void *arg);
 
 
 //time.c
-long		now(void);
-long		start(void);
+long		_now(void);
+long		curr_timestamp(void);
+long		elapsed_time(long first_event, long second_event);
 
 //threads.c
 int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
@@ -130,6 +133,7 @@ int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
 //writes.c
 t_mtx		*write_lock(void);
 void		_write(long time, long id, char *str, int strlen);
+t_data		**_data(char **argv);
 
 
 //_debug.c -> delete when finished

@@ -14,57 +14,75 @@
 
 void	take_forks(t_philos *philo)
 {
-	if (philo->id % 2 == 0)
+	t_fork	*first;
+	t_fork	*second;
+	long	now;
+
+	now = _now();
+	if (philo->right_fork->id > philo->left_fork->id )
 	{
-		pthread_mutex_lock(&philo->right_fork->mtx);
-		_write(now(), philo->id, ACT_2, 18);
-		pthread_mutex_lock(&philo->left_fork->mtx);
-		_write(now(), philo->id, ACT_2, 18);
+		first = philo->left_fork;
+		second = philo->right_fork;
 	}
 	else
 	{
-		pthread_mutex_lock(&philo->left_fork->mtx);
-		_write(now(), philo->id, ACT_2, 18);
-		pthread_mutex_lock(&philo->right_fork->mtx);
-		_write(now(), philo->id, ACT_2, 18);
+		first = philo->right_fork;
+		second = philo->left_fork;
 	}
+	pthread_mutex_lock(&first->mtx);
+	_write(now, philo->id, ACT_2, 18);
+	pthread_mutex_lock(&second->mtx);
+	_write(now, philo->id, ACT_2, 18);
 }
 
 void	eat(t_philos *philo)
 {
-	long	time_now;
+	long	timestamp;
+	long	now;
 
-	time_now = now();
+	timestamp = curr_timestamp();
+	now = _now();
 	pthread_mutex_lock(&philo->mtx);
-	_write(time_now, philo->id, ACT_1, 11);
+	_write(now, philo->id, ACT_1, 11);
 	philo->times_ate++;
 	philo->time_last_meal = philo->time_this_meal;
-	philo->time_this_meal = time_now;
-	pthread_mutex_unlock(&philo->mtx);
+	philo->time_this_meal = timestamp;
+	if (philo->time_last_meal != -1 && philo->time_this_meal != -1)
+	{
+		if (elapsed_time(philo->time_last_meal, philo->time_this_meal) > (*_data(NULL))->started_sim_time)
+			philo->alive = 0;
+	}
 	usleep(philo->time_to_eat);
+	pthread_mutex_unlock(&philo->mtx);
 }
 
 void	drop_forks(t_philos *philo)
 {	
-	if (philo->id % 2 == 0)
+	t_fork	*first;
+	t_fork	*second;
+
+	if (philo->right_fork->id > philo->left_fork->id )
 	{
-		pthread_mutex_unlock(&philo->left_fork->mtx);
-		pthread_mutex_unlock(&philo->right_fork->mtx);
+		first = philo->right_fork;
+		second = philo->left_fork;
 	}
 	else
 	{
-		pthread_mutex_unlock(&philo->right_fork->mtx);
-		pthread_mutex_unlock(&philo->left_fork->mtx);
+		first = philo->left_fork;
+		second = philo->right_fork;
 	}
+	pthread_mutex_unlock(&first->mtx);
+	pthread_mutex_unlock(&second->mtx);
+
+
 }
 
 void	_sleep(t_philos *philo)
 {
-	_write(now(), philo->id, ACT_3, 13);
+	_write(_now(), philo->id, ACT_3, 13);
 	usleep(philo->time_to_sleep);
 }
-
 void	think(t_philos *philo)
 {
-	_write(now(), philo->id, ACT_4, 13);
+	_write(_now(), philo->id, ACT_4, 13);
 }

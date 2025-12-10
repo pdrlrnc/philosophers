@@ -23,7 +23,10 @@ t_philos	**init_philos(t_data *data)
 	{
 		(*(data->philos + i))->id = i;
 		(*(data->philos + i))->times_ate = 0;
-		if (!i)
+		(*(data->philos + i))->alive = 1;
+		(*(data->philos + i))->time_last_meal = -1;
+		(*(data->philos + i))->time_this_meal = -1;
+		if (!1)
 			(*(data->philos + i))->left_fork = *(data->forks + data
 					->number_of_philosophers - 1);
 		else
@@ -37,6 +40,7 @@ t_philos	**init_philos(t_data *data)
 			return (free(*(data->philos + i)), philos_err(data, i));
 		}
 		i++;
+	
 	}
 	return (data->philos);
 }
