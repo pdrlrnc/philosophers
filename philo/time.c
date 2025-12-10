@@ -12,11 +12,27 @@
 
 #include "philo.h"
 
-long	now(void)
+long	start(void)
 {
 	struct timeval	tv;
+	static long	now;
+
+	if (now == 0)
+	{
+		if (gettimeofday(&tv, NULL) != 0)
+			return (-1);
+		now = tv.tv_sec * 1000L + tv.tv_usec / 1000L;
+	}
+	return (now);
+}
+
+long	now(void)
+{
+	struct timeval tv;
+	long	now;
 	
 	if (gettimeofday(&tv, NULL) != 0)
 		return (-1);
-	return (tv.tv_sec * 1000L + tv.tv_usec / 1000L);
+	now = tv.tv_sec * 1000L + tv.tv_usec/ 1000L;
+	return (now - start());
 }

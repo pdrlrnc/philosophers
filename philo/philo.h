@@ -28,6 +28,9 @@ time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
 # define ERR_6 "Error creating data mutex\n"
 
 # define ACT_1 " is eating\n"
+# define ACT_2 " is taking a fork\n"
+# define ACT_3 " is sleeping\n"
+# define ACT_4 " is thinking\n"
 
 typedef pthread_mutex_t	t_mtx;
 
@@ -57,6 +60,8 @@ typedef struct s_philos
 	long	time_to_eat;
 	long	time_to_sleep;
 	long	time_to_die;
+	int	alive;
+	int	full;
 	t_mtx	mtx;
 }	t_philos;
 
@@ -70,9 +75,9 @@ typedef struct s_data
 	int			number_of_eats;
 	int			ended_sim;
 	t_mtx		mtx;
-	t_mtx		write_mtx;
 	t_fork		**forks;
 	t_philos	**philos;
+	pthread_t	ref;
 	t_referee	**referees;
 }	t_data;
 
@@ -103,22 +108,28 @@ void		add_params_to_philo(t_data *data, t_philos *philo);
 void		eat(t_philos *philo);
 void		_sleep(t_philos *philo);
 void		think(t_philos *philo);
+void		take_forks(t_philos *philo);
+void		drop_forks(t_philos *philo);
 
 //simulation.c
 int			ended_sim(t_data *data);
 void		simulate(t_data *data);
 int			check_if_rip(t_data *data, int i);
 void		*run(void *arg);
+int			check_if_dead(t_data *data);
+void		*ref(void *arg);
 
 
 //time.c
 long		now(void);
+long		start(void);
 
 //threads.c
-int			thread(pthread_t *thread, void *(*f)(void *), t_philos *philo, t_ops op);
+int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
 
 //writes.c
 t_mtx		*write_lock(void);
+void		_write(long time, long id, char *str, int strlen);
 
 
 //_debug.c -> delete when finished

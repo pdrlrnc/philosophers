@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-int	thread(pthread_t *thread, void *(*f)(void *), t_philos *philo, t_ops op)
+int	thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op)
 {
 	if (op == CREATE)
 		return (pthread_create(thread, NULL, f, philo)); 

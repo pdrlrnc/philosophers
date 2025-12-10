@@ -8,7 +8,7 @@
 /*   Created: 2025/11/20 11:31:24 by pedde-so          #+#    #+#             */
 /*   Updated: 2025/11/20 11:31:25 by pedde-so         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/* ***************************************************************************/
 
 #include "philo.h"
 
@@ -25,7 +25,6 @@ int	main(int argc, char **argv)
 		return (write(STDERR_FILENO, "Error creating forks\n", 21), 1);
 	if (!init_philos(data))
 		return (write(STDERR_FILENO, "Error creating philosophers\n", 28), 1);
-	print_table(data);
 	while (!ended_sim(data))
 	{
 		simulate(data);

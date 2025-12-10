@@ -12,42 +12,59 @@
 
 #include "philo.h"
 
-void	eat(t_philos *philo)
+void	take_forks(t_philos *philo)
 {
 	if (philo->id % 2 == 0)
 	{
 		pthread_mutex_lock(&philo->right_fork->mtx);
+		_write(now(), philo->id, ACT_2, 18);
 		pthread_mutex_lock(&philo->left_fork->mtx);
+		_write(now(), philo->id, ACT_2, 18);
 	}
 	else
 	{
 		pthread_mutex_lock(&philo->left_fork->mtx);
+		_write(now(), philo->id, ACT_2, 18);
 		pthread_mutex_lock(&philo->right_fork->mtx);
+		_write(now(), philo->id, ACT_2, 18);
 	}
-	pthread_mutex_lock(write_lock());
-	ft_putnbr_fd(philo->id, STDOUT_FILENO);
-	write(STDOUT_FILENO, ACT_1, 11);
-	pthread_mutex_unlock(write_lock());
+}
+
+void	eat(t_philos *philo)
+{
+	long	time_now;
+
+	time_now = now();
+	pthread_mutex_lock(&philo->mtx);
+	_write(time_now, philo->id, ACT_1, 11);
+	philo->times_ate++;
+	philo->time_last_meal = philo->time_this_meal;
+	philo->time_this_meal = time_now;
+	pthread_mutex_unlock(&philo->mtx);
 	usleep(philo->time_to_eat);
-	pthread_mutex_unlock(&philo->right_fork->mtx);
-	pthread_mutex_unlock(&philo->left_fork->mtx);
+}
+
+void	drop_forks(t_philos *philo)
+{	
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_unlock(&philo->left_fork->mtx);
+		pthread_mutex_unlock(&philo->right_fork->mtx);
+	}
+	else
+	{
+		pthread_mutex_unlock(&philo->right_fork->mtx);
+		pthread_mutex_unlock(&philo->left_fork->mtx);
+	}
 }
 
 void	_sleep(t_philos *philo)
 {
-	pthread_mutex_lock(write_lock());
-	ft_putnbr_fd(philo->id, STDOUT_FILENO);
-	write(STDOUT_FILENO, " is sleeping\n", 13);
-	pthread_mutex_unlock(write_lock());
+	_write(now(), philo->id, ACT_3, 13);
 	usleep(philo->time_to_sleep);
 }
 
 void	think(t_philos *philo)
 {
-	(void)philo;
-	pthread_mutex_lock(write_lock());
-	ft_putnbr_fd(philo->id, STDOUT_FILENO);
-	write(STDOUT_FILENO, " is thinking\n", 13);
-	pthread_mutex_unlock(write_lock());
-	usleep(1);
+	_write(now(), philo->id, ACT_4, 13);
 }
