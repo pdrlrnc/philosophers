@@ -14,13 +14,20 @@
 
 int	main(int argc, char **argv)
 {
+	t_data	*data;
+
+	data = parser(argc, argv);
+	if (!data)
+		return (1);
 	if (pthread_mutex_init(write_lock(), NULL))
 		return (write(STDERR_FILENO, "Error creating write mutex\n", 27), 1);
-	if (!parser(argc, argv))
-		return (1);
-	while (!(*_data(NULL))->ended_sim)
+	if (!init_forks(data))
+		return (write(STDERR_FILENO, "Error creating forks\n", 21), 1);
+	if (!init_philos(data))
+		return (write(STDERR_FILENO, "Error creating philosophers\n", 28), 1);
+	while (!ended_sim(data))
 	{
-		simulate(*_data(NULL));
+		simulate(data);
 		usleep(500);
 		return (1);
 	}

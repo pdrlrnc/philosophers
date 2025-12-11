@@ -17,12 +17,9 @@ void	print_table(t_data *data)
 	int	i;
 
 	i = 0;
-	write(STDOUT_FILENO, "data->started_sim_time = ", 25);
-	ft_putnbr_fd(data->started_sim_time, STDOUT_FILENO);
-	write(STDOUT_FILENO, "\n", 1);
 	while (data->philos[i])
 	{
-		write(STDOUT_FILENO, "philosopher (", 14);
+		write(STDOUT_FILENO, "philosopher (", 13);
 		ft_putnbr_fd(data->philos[i]->id, STDOUT_FILENO);
 		write(STDOUT_FILENO, ") has left fork (", 17);
 		ft_putnbr_fd(data->philos[i]->left_fork->id, STDOUT_FILENO);
@@ -33,5 +30,4 @@ void	print_table(t_data *data)
 		write(STDOUT_FILENO, ").\n", 3);
 		i++;
 	}
-	write(STDOUT_FILENO, "\n", 1);
 }

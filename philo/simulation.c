@@ -12,29 +12,23 @@
 
 #include "philo.h"
 
-int	ended_sim(void)
+int	ended_sim(t_data *data)
 {
 	int	ended_sim;
 
-	pthread_mutex_lock(&(*_data(NULL))->mtx);
-	ended_sim = (*_data(NULL))->ended_sim;
-	pthread_mutex_unlock(&(*_data(NULL))->mtx);
+	pthread_mutex_lock(&data->mtx);
+	ended_sim = data->ended_sim;
+	pthread_mutex_unlock(&data->mtx);
 	return (ended_sim);
-}
-
-void	end_sim(void)
-{
-	pthread_mutex_lock(&(*_data(NULL))->mtx);
-	(*_data(NULL))->ended_sim = 1;
-	pthread_mutex_unlock(&(*_data(NULL))->mtx);
 }
 
 void	simulate(t_data *data)
 {
 	int		i;
 
-	data->started_sim_time = curr_timestamp();
+	data->started_sim_time = start();
 	i = 0;
+	thread(&data->ref, ref, data, CREATE);
 	while (i < data->number_of_philosophers)
 	{
 		thread(&data->philos[i]->thread, run, data->philos[i], CREATE);
@@ -48,19 +42,46 @@ void	simulate(t_data *data)
 	}
 }
 
-int	check_if_dead(t_philos *philo)
+void	*ref(void *arg)
 {
-	int	dead;
+	t_data	*data;
 
-	dead = 0;
-	if (ended_sim())
-		return (1);
-	pthread_mutex_lock(&philo->mtx);
-	dead = philo->alive;
-	if (dead)
-		end_sim();
-	pthread_mutex_unlock(&philo->mtx);
-	return (dead);
+	data = (t_data *)arg;
+	pthread_mutex_lock(&data->mtx);
+	while (!data->ended_sim)
+	{
+		data->ended_sim = check_if_dead(data);
+		pthread_mutex_unlock(&data->mtx);
+		usleep(100);
+		pthread_mutex_lock(&data->mtx);
+	}
+	pthread_mutex_unlock(&data->mtx);
+		//maybe usleep(1000)??
+	return (NULL);
+}
+
+//mudar para data
+//passsar o gajo para dead caso seja
+int	check_if_dead(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_lock(&data->philos[i]->mtx);
+	while (data->philos[i] && !data->ended_sim)
+	{
+		if ((data->philos[i]->time_this_meal - data->philos[i]->time_this_meal) > data->time_to_die)
+		{
+			data->philos[i]->alive = 0;
+			data->ended_sim = 1;
+			pthread_mutex_unlock(&data->philos[i]->mtx);
+			return (1);
+		}
+		pthread_mutex_unlock(&data->philos[i]->mtx);
+		usleep(100);
+		pthread_mutex_lock(&data->philos[i]->mtx);
+	}
+	return (0);
 }
 
 void	*run(void *arg)
@@ -68,18 +89,18 @@ void	*run(void *arg)
 	t_philos	*philo;
 
 	philo = (t_philos *)arg;
-	while (!ended_sim())
+	while (1)
 	{
-		if (!check_if_dead(philo))
-			take_forks(philo);
-		if (!check_if_dead(philo))
-			eat(philo);
-		if (!check_if_dead(philo))
-			drop_forks(philo);
-		if (!check_if_dead(philo))
-			_sleep(philo);
-		if (!check_if_dead(philo))
-			think(philo);
+		//maybe if i % 2 != 0 usleep(1000)??
+		take_forks(philo);
+		//checkar
+		eat(philo);
+		//checkar
+		drop_forks(philo);
+		//checkar
+		_sleep(philo);
+		//checkar
+		think(philo);
 	}
 	return (NULL);
 }
