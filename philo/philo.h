@@ -32,6 +32,7 @@ time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
 # define ACT_3 " is sleeping\n"
 # define ACT_4 " is thinking\n"
 # define ACT_5 " is full\n"
+# define ACT_6 " is dead\n"
 
 typedef pthread_mutex_t	t_mtx;
 
@@ -120,10 +121,15 @@ int			check_if_dead(t_data *data);
 int			get_time_to_sleep(t_philos *philo);
 int			is_full(t_philos *philo);
 int			get_id(t_philos *philo);
+int		is_alive(t_philos *philo);
+int		check_if_dead(t_data *data);
 void		check_times_ate(t_philos *philo);
 void		*ref(void *arg);
 void		simulate(t_data *data);
 void		*run(void *arg);
+void		check_if_hungry(t_philos *philo);
+void		kill_all(t_data *data);
+void		kill_philo(t_philos *philo);
 
 
 //time.c

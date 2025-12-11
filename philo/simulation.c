@@ -56,49 +56,61 @@ void	*ref(void *arg)
 		pthread_mutex_lock(&data->mtx);
 	}
 	pthread_mutex_unlock(&data->mtx);
-		//maybe usleep(1000)??
 	return (NULL);
 }
 
-//mudar para data
-//passsar o gajo para dead caso seja
 int	check_if_dead(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	pthread_mutex_lock(&data->philos[i]->mtx);
-	while (data->philos[i] && !data->ended_sim)
+	while (data->philos[i])
 	{
-		if ((data->philos[i]->time_this_meal - data->philos[i]->time_this_meal) > data->time_to_die)
+		if (!is_alive(data->philos[i]))
 		{
-			data->philos[i]->alive = 0;
-			data->ended_sim = 1;
-			pthread_mutex_unlock(&data->philos[i]->mtx);
+			kill_all(data);
 			return (1);
 		}
-		pthread_mutex_unlock(&data->philos[i]->mtx);
-		usleep(100);
-		pthread_mutex_lock(&data->philos[i]->mtx);
+		i++;
 	}
 	return (0);
 }
+
+void	kill_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (data->philos[i])
+	{
+		kill_philo(data->philos[i]);
+		i++;
+	}
+}
+
 
 void	*run(void *arg)
 {
 	t_philos	*philo;
 
 	philo = (t_philos *)arg;
-	while (!is_full(philo))
+	while (!is_full(philo) && is_alive(philo))
 	{
-		take_forks(philo);
-		eat(philo);
-		check_times_ate(philo);
+		if (is_alive(philo))
+			take_forks(philo);
+		if (is_alive(philo))
+			check_if_hungry(philo);
+		if (is_alive(philo))
+			eat(philo);
+		if (is_alive(philo))
+			check_times_ate(philo);
 		drop_forks(philo);
 		if (!is_full(philo))
 		{
-			_sleep(philo);
-			think(philo);
+			if (is_alive(philo))
+				_sleep(philo);
+			if (is_alive(philo))
+				think(philo);
 		}
 	}
 	return (NULL);
@@ -113,6 +125,22 @@ void	check_times_ate(t_philos *philo)
 		{
 			_write(now(), philo->id, ACT_5, 9);
 			philo->full = 1;
+		}
+	}
+	pthread_mutex_unlock(&philo->mtx);
+}
+
+void	check_if_hungry(t_philos *philo)
+{
+	pthread_mutex_lock(&philo->mtx);
+	if (philo->alive && !philo->full)
+	{
+		pthread_mutex_lock(write_lock());
+		pthread_mutex_unlock(write_lock());
+		if ((philo->time_this_meal - philo->time_last_meal) > philo->time_to_die)
+		{
+			_write(now(), philo->id, ACT_6, 9);
+			philo->alive = 0;
 		}
 	}
 	pthread_mutex_unlock(&philo->mtx);
@@ -138,6 +166,17 @@ int	is_full(t_philos *philo)
 	return (full);
 }
 
+int	is_alive(t_philos *philo)
+{
+	int	alive;
+
+	usleep(1000);
+	pthread_mutex_lock(&philo->mtx);
+	alive = philo->alive;
+	pthread_mutex_unlock(&philo->mtx);
+	return (alive);
+}
+
 int	get_time_to_sleep(t_philos *philo)
 {
 	int	time_to_sleep;
@@ -146,4 +185,11 @@ int	get_time_to_sleep(t_philos *philo)
 	time_to_sleep = philo->time_to_sleep;
 	pthread_mutex_unlock(&philo->mtx);
 	return (time_to_sleep);
+}
+
+void	kill_philo(t_philos *philo)
+{
+	pthread_mutex_lock(&philo->mtx);
+	philo->alive = 0;
+	pthread_mutex_unlock(&philo->mtx);
 }

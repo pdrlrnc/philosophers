@@ -97,4 +97,6 @@ void	add_params_to_philo(t_data *data, t_philos *philo)
 	philo->times_ate = 0;
 	philo->alive = 1;
 	philo->full = 0;
+	philo->time_last_meal = 0;
+	philo->time_this_meal = 0;
 }

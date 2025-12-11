@@ -14,6 +14,7 @@
 
 void	take_forks(t_philos *philo)
 {
+	check_if_hungry(philo);
 	if (get_id(philo) % 2 == 0)
 	{
 		pthread_mutex_lock(&philo->right_fork->mtx);
@@ -34,6 +35,7 @@ void	eat(t_philos *philo)
 {
 	long	time_now;
 	
+	check_if_hungry(philo);
 	if (!is_full(philo))
 	{
 		time_now = now();
@@ -49,6 +51,7 @@ void	eat(t_philos *philo)
 
 void	drop_forks(t_philos *philo)
 {	
+	check_if_hungry(philo);
 	if (get_id(philo) % 2 == 0)
 	{
 		pthread_mutex_unlock(&philo->left_fork->mtx);
@@ -63,11 +66,13 @@ void	drop_forks(t_philos *philo)
 
 void	_sleep(t_philos *philo)
 {
+	check_if_hungry(philo);
 	_write(now(), get_id(philo), ACT_3, 13);
 	usleep(get_time_to_sleep(philo));
 }
 
 void	think(t_philos *philo)
 {
+	check_if_hungry(philo);
 	_write(now(), get_id(philo), ACT_4, 13);
 }
