@@ -93,4 +93,8 @@ void	add_params_to_philo(t_data *data, t_philos *philo)
 	philo->time_to_eat = data->time_to_eat;
 	philo->time_to_sleep = data->time_to_sleep;
 	philo->time_to_die = data->time_to_die;
+	philo->number_of_eats = data->number_of_eats;
+	philo->times_ate = 0;
+	philo->alive = 1;
+	philo->full = 0;
 }

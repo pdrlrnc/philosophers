@@ -31,6 +31,7 @@ time_to_sleep [number_of_times_each_philosopher_must_eat]\n"
 # define ACT_2 " is taking a fork\n"
 # define ACT_3 " is sleeping\n"
 # define ACT_4 " is thinking\n"
+# define ACT_5 " is full\n"
 
 typedef pthread_mutex_t	t_mtx;
 
@@ -60,6 +61,7 @@ typedef struct s_philos
 	long	time_to_eat;
 	long	time_to_sleep;
 	long	time_to_die;
+	long	number_of_eats;
 	int	alive;
 	int	full;
 	t_mtx	mtx;
@@ -113,11 +115,15 @@ void		drop_forks(t_philos *philo);
 
 //simulation.c
 int			ended_sim(t_data *data);
-void		simulate(t_data *data);
 int			check_if_rip(t_data *data, int i);
-void		*run(void *arg);
 int			check_if_dead(t_data *data);
+int			get_time_to_sleep(t_philos *philo);
+int			is_full(t_philos *philo);
+int			get_id(t_philos *philo);
+void		check_times_ate(t_philos *philo);
 void		*ref(void *arg);
+void		simulate(t_data *data);
+void		*run(void *arg);
 
 
 //time.c

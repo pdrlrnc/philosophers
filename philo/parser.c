@@ -60,7 +60,7 @@ static void	atoi_input(t_data *data, char **argv)
 	data->time_to_die = ft_atoi(argv[2]) * 1000;
 	data->time_to_eat = ft_atoi(argv[3]) * 1000;
 	data->time_to_sleep = ft_atoi(argv[4]) * 1000;
-	data->number_of_eats = 0;
+	data->number_of_eats = -1;
 	if (argv[5])
 		data->number_of_eats = ft_atoi(argv[5]);
 }
