@@ -65,6 +65,7 @@ typedef struct s_philos
 	long	number_of_eats;
 	int	alive;
 	int	full;
+	int	*ended_sim;
 	t_mtx	mtx;
 }	t_philos;
 
@@ -121,13 +122,14 @@ int			check_if_dead(t_data *data);
 int			get_time_to_sleep(t_philos *philo);
 int			is_full(t_philos *philo);
 int			get_id(t_philos *philo);
-int		is_alive(t_philos *philo);
-int		check_if_dead(t_data *data);
+int			is_alive(t_philos *philo);
+int			check_if_hungry(t_philos *philo);
+int			check_if_dead(t_data *data);
+int			sim_has_ended(t_philos *philo);
 void		check_times_ate(t_philos *philo);
 void		*ref(void *arg);
 void		simulate(t_data *data);
 void		*run(void *arg);
-void		check_if_hungry(t_philos *philo);
 void		kill_all(t_data *data);
 void		kill_philo(t_philos *philo);
 

@@ -99,4 +99,5 @@ void	add_params_to_philo(t_data *data, t_philos *philo)
 	philo->full = 0;
 	philo->time_last_meal = 0;
 	philo->time_this_meal = 0;
+	philo->ended_sim = &(data->ended_sim);
 }
