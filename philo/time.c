@@ -47,15 +47,15 @@ void	smart_usleep(t_philos *philo, long us)
 	long	mini_sleep;
 	long	target;
 
-	mini_sleep = 1000;
+	mini_sleep = 10;
 	target = ms_to_us(now()) + us;
 	while (ms_to_us(now()) < target)
 	{
 		if (!is_alive(philo))
 			break ;
 		mini_sleep = target - ms_to_us(now());
-		if (mini_sleep > 1000)
-			mini_sleep = 1000;
+		if (mini_sleep > 10)
+			mini_sleep = 10;
 		usleep(mini_sleep);
 	}
 }

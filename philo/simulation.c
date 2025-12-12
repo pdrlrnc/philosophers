@@ -165,7 +165,7 @@ int	check_if_hungry(t_philos *philo)
 		return (pthread_mutex_unlock(&philo->mtx), 1);
 	if (!philo->full)
 	{
-		if ((philo->time_this_meal - philo->time_last_meal) > philo->time_to_die)
+		if ((now() - philo->time_this_meal) >= philo->time_to_die)
 		{
 			pthread_mutex_unlock(&philo->mtx);
 			_write(now(), philo, ACT_6, 9);

@@ -16,6 +16,7 @@ void	take_forks(t_philos *philo)
 {
 	if (get_id(philo) % 2 == 0)
 	{
+		usleep(1000);
 		pthread_mutex_lock(&philo->right_fork->mtx);
 		if (!sim_has_ended(philo))
 			_write(now(), philo, ACT_2, 18);
