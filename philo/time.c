@@ -36,3 +36,31 @@ long	now(void)
 	now = tv.tv_sec * 1000L + tv.tv_usec/ 1000L;
 	return (now - start());
 }
+
+long	ms_to_us(long ms)
+{
+	return (ms * 1000);
+}
+
+void	smart_usleep(t_philos *philo, long us)
+{
+	long	increment;
+	long	mini_sleep;
+	long	target;
+
+	increment = 0;
+	mini_sleep = 1000;
+	target = ms_to_us(now()) + us;
+	while (increment < us)
+	{
+		if (check_if_hungry(philo))
+			break ;
+		if ((us - increment) < mini_sleep)
+			mini_sleep = us - increment;
+		usleep(mini_sleep);
+		increment += mini_sleep;
+	}
+	pthread_mutex_lock(&philo->mtx);
+	philo->debt = ms_to_us(now()) - target;
+	pthread_mutex_unlock(&philo->mtx);
+}

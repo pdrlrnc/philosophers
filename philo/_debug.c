@@ -31,3 +31,18 @@ void	print_table(t_data *data)
 		i++;
 	}
 }
+
+void	print_data_vars(t_data *data)
+{
+	write(STDOUT_FILENO, "number_of_philosophers: ", 24);
+	ft_putnbr_fd(data->number_of_philosophers, STDOUT_FILENO);
+	write(STDOUT_FILENO, " time_to_die: ", 14);
+	ft_putnbr_fd(data->time_to_die, STDOUT_FILENO);
+	write(STDOUT_FILENO, " time_to_eat: ", 14);
+	ft_putnbr_fd(data->time_to_eat, STDOUT_FILENO);
+	write(STDOUT_FILENO, " time_to_sleep: ", 16);
+	ft_putnbr_fd(data->time_to_sleep, STDOUT_FILENO);
+	write(STDOUT_FILENO, " number_of_eats: ", 17);
+	ft_putnbr_fd(data->number_of_eats, STDOUT_FILENO);
+	write(STDOUT_FILENO, "\n", 1);
+}

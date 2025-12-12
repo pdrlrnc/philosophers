@@ -26,6 +26,7 @@ void	simulate(t_data *data)
 {
 	int		i;
 
+	print_data_vars(data);
 	data->started_sim_time = start();
 	i = 0;
 	thread(&data->ref, ref, data, CREATE);
@@ -116,7 +117,9 @@ void	check_times_ate(t_philos *philo)
 int	check_if_hungry(t_philos *philo)
 {
 	pthread_mutex_lock(&philo->mtx);
-	if (philo->alive && !philo->full)
+	if (!philo->alive)
+		return (1);
+	if (!philo->full)
 	{
 		if ((philo->time_this_meal - philo->time_last_meal) > philo->time_to_die)
 		{
@@ -179,6 +182,16 @@ int	get_time_to_sleep(t_philos *philo)
 	time_to_sleep = philo->time_to_sleep;
 	pthread_mutex_unlock(&philo->mtx);
 	return (time_to_sleep);
+}
+
+long	get_debt(t_philos *philo)
+{
+	int	debt;
+
+	pthread_mutex_lock(&philo->mtx);
+	debt = philo->debt;
+	pthread_mutex_unlock(&philo->mtx);
+	return (debt);
 }
 
 void	kill_philo(t_philos *philo)

@@ -37,6 +37,8 @@ void	take_forks(t_philos *philo)
 void	eat(t_philos *philo)
 {
 	long	time_now;
+	long	time_to_eat;
+	long	debt;
 	
 	if (!is_full(philo))
 	{
@@ -47,8 +49,10 @@ void	eat(t_philos *philo)
 		philo->times_ate++;
 		philo->time_last_meal = philo->time_this_meal;
 		philo->time_this_meal = time_now;
-		usleep(philo->time_to_eat); //add a function that usleep(100)s time_to_eat times
+	       	time_to_eat = philo->time_to_eat;
+		debt = philo->debt;
 		pthread_mutex_unlock(&philo->mtx);
+		smart_usleep(philo, ms_to_us(time_to_eat) - debt);
 	}
 }
 
@@ -70,7 +74,7 @@ void	_sleep(t_philos *philo)
 {
 	if (!sim_has_ended(philo))
 		_write(now(), get_id(philo), ACT_3, 13);
-	usleep(get_time_to_sleep(philo));
+	smart_usleep(philo, ms_to_us(get_time_to_sleep(philo)));
 }
 
 void	think(t_philos *philo)

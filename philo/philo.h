@@ -63,6 +63,7 @@ typedef struct s_philos
 	long	time_to_sleep;
 	long	time_to_die;
 	long	number_of_eats;
+	long	debt;
 	int	alive;
 	int	full;
 	int	*ended_sim;
@@ -137,6 +138,8 @@ void		kill_philo(t_philos *philo);
 //time.c
 long		now(void);
 long		start(void);
+long		ms_to_us(long ms);
+void		smart_usleep(t_philos *philo, long us);
 
 //threads.c
 int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
@@ -148,5 +151,6 @@ void		_write(long time, long id, char *str, int strlen);
 
 //_debug.c -> delete when finished
 void		print_table(t_data *data);
+void		print_data_vars(t_data *data);
 
 #endif
