@@ -18,19 +18,19 @@ void	take_forks(t_philos *philo)
 	{
 		pthread_mutex_lock(&philo->right_fork->mtx);
 		if (!sim_has_ended(philo))
-			_write(now(), get_id(philo), ACT_2, 18);
+			_write(now(), philo, ACT_2, 18);
 		pthread_mutex_lock(&philo->left_fork->mtx);
 		if (!sim_has_ended(philo))
-			_write(now(), get_id(philo), ACT_2, 18);
+			_write(now(), philo, ACT_2, 18);
 	}
 	else
 	{
 		pthread_mutex_lock(&philo->left_fork->mtx);
 		if (!sim_has_ended(philo))
-			_write(now(), get_id(philo), ACT_2, 18);
+			_write(now(), philo, ACT_2, 18);
 		pthread_mutex_lock(&philo->right_fork->mtx);
 		if (!sim_has_ended(philo))
-			_write(now(), get_id(philo), ACT_2, 18);
+			_write(now(), philo, ACT_2, 18);
 	}
 }
 
@@ -38,21 +38,23 @@ void	eat(t_philos *philo)
 {
 	long	time_now;
 	long	time_to_eat;
-	long	debt;
 	
 	if (!is_full(philo))
 	{
 		time_now = now();
 		pthread_mutex_lock(&philo->mtx);
 		if (!(*philo->ended_sim))
-			_write(time_now, philo->id, ACT_1, 11);
+		{
+			pthread_mutex_unlock(&philo->mtx);
+			_write(time_now, philo, ACT_1, 11);
+			pthread_mutex_lock(&philo->mtx);
+		}
 		philo->times_ate++;
 		philo->time_last_meal = philo->time_this_meal;
 		philo->time_this_meal = time_now;
 	       	time_to_eat = philo->time_to_eat;
-		debt = philo->debt;
 		pthread_mutex_unlock(&philo->mtx);
-		smart_usleep(philo, ms_to_us(time_to_eat) - debt);
+		smart_usleep(philo, ms_to_us(time_to_eat));
 	}
 }
 
@@ -73,12 +75,12 @@ void	drop_forks(t_philos *philo)
 void	_sleep(t_philos *philo)
 {
 	if (!sim_has_ended(philo))
-		_write(now(), get_id(philo), ACT_3, 13);
+		_write(now(), philo, ACT_3, 13);
 	smart_usleep(philo, ms_to_us(get_time_to_sleep(philo)));
 }
 
 void	think(t_philos *philo)
 {
 	if (!sim_has_ended(philo))
-		_write(now(), get_id(philo), ACT_4, 13);
+		_write(now(), philo, ACT_4, 13);
 }

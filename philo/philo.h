@@ -127,6 +127,7 @@ int			is_alive(t_philos *philo);
 int			check_if_hungry(t_philos *philo);
 int			check_if_dead(t_data *data);
 int			sim_has_ended(t_philos *philo);
+int			check_if_all_full(t_data *data);
 void		check_times_ate(t_philos *philo);
 void		*ref(void *arg);
 void		simulate(t_data *data);
@@ -146,7 +147,7 @@ int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
 
 //writes.c
 t_mtx		*write_lock(void);
-void		_write(long time, long id, char *str, int strlen);
+void		_write(long time, t_philos *philo, char *str, int strlen);
 
 
 //_debug.c -> delete when finished

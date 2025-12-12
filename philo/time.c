@@ -44,23 +44,18 @@ long	ms_to_us(long ms)
 
 void	smart_usleep(t_philos *philo, long us)
 {
-	long	increment;
 	long	mini_sleep;
 	long	target;
 
-	increment = 0;
 	mini_sleep = 1000;
 	target = ms_to_us(now()) + us;
-	while (increment < us)
+	while (ms_to_us(now()) < target)
 	{
-		if (check_if_hungry(philo))
+		if (!is_alive(philo))
 			break ;
-		if ((us - increment) < mini_sleep)
-			mini_sleep = us - increment;
+		mini_sleep = target - ms_to_us(now());
+		if (mini_sleep > 1000)
+			mini_sleep = 1000;
 		usleep(mini_sleep);
-		increment += mini_sleep;
 	}
-	pthread_mutex_lock(&philo->mtx);
-	philo->debt = ms_to_us(now()) - target;
-	pthread_mutex_unlock(&philo->mtx);
 }

@@ -51,9 +51,51 @@ void	*ref(void *arg)
 	data = (t_data *)arg;
 	pthread_mutex_lock(&data->mtx);
 	while (!data->ended_sim)
+	{
 		data->ended_sim = check_if_dead(data);
+		if (data->ended_sim)
+		{
+			kill_all(data);
+			pthread_mutex_unlock(write_lock());
+		}
+		else
+			data->ended_sim = check_if_all_full(data);
+	}
 	pthread_mutex_unlock(&data->mtx);
 	return (NULL);
+}
+
+int	check_if_all_full(t_data *data)
+{
+	int	i;
+	int	full;
+
+	i = 0;
+	full = 0;
+	while (i < data->number_of_philosophers)
+	{
+		pthread_mutex_lock(&data->philos[i]->mtx);
+		full = data->philos[i]->full;
+		pthread_mutex_unlock(&data->philos[i]->mtx);
+		if (!full)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	kill_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
+		pthread_mutex_lock(&data->philos[i]->mtx);
+		data->philos[i]->alive = 0;
+		pthread_mutex_unlock(&data->philos[i]->mtx);
+		i++;
+	}
 }
 
 int	check_if_dead(t_data *data)
@@ -107,7 +149,9 @@ void	check_times_ate(t_philos *philo)
 	{
 		if (philo->number_of_eats == philo->times_ate)
 		{
-			_write(now(), philo->id, ACT_5, 9);
+			pthread_mutex_unlock(&philo->mtx);
+			_write(now(), philo, ACT_5, 9);
+			pthread_mutex_lock(&philo->mtx);
 			philo->full = 1;
 		}
 	}
@@ -118,12 +162,14 @@ int	check_if_hungry(t_philos *philo)
 {
 	pthread_mutex_lock(&philo->mtx);
 	if (!philo->alive)
-		return (1);
+		return (pthread_mutex_unlock(&philo->mtx), 1);
 	if (!philo->full)
 	{
 		if ((philo->time_this_meal - philo->time_last_meal) > philo->time_to_die)
 		{
-			_write(now(), philo->id, ACT_6, 9);
+			pthread_mutex_unlock(&philo->mtx);
+			_write(now(), philo, ACT_6, 9);
+			pthread_mutex_lock(&philo->mtx);
 			philo->alive = 0;
 			pthread_mutex_unlock(&philo->mtx);
 			return (1);
