@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   really_not_libft.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pedde-so <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/13 12:09:52 by pedde-so          #+#    #+#             */
-/*   Updated: 2025/12/13 12:09:55 by pedde-so         ###   ########.fr       */
+/*   Created: 2025/12/13 12:45:59 by pedde-so          #+#    #+#             */
+/*   Updated: 2025/12/13 12:46:09 by pedde-so         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+int	ft_isspace(char c)
 {
-	t_data	*data;
-
-	data = parser(argc, argv);
-	if (!data)
+	if (c == ' ' || c == '\f' || c == '\n')
 		return (1);
-	if (pthread_mutex_init(write_lock(), NULL))
-		return (write(STDERR_FILENO, "Error creating write mutex\n", 27), 1);
-	if (!init_forks(data))
-		return (write(STDERR_FILENO, "Error creating forks\n", 21), 1);
-	if (!init_philos(data))
-		return (write(STDERR_FILENO, "Error creating philosophers\n", 28), 1);
-	simulate(data);
+	if (c == '\r' || c == '\t' || c == '\v')
+		return (1);
 	return (0);
 }

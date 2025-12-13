@@ -40,7 +40,7 @@ t_philos	**init_philos(t_data *data)
 
 t_philos	**single_philo(t_data *data)
 {
-	data->philos[0]->id = 0;	
+	data->philos[0]->id = 0;
 	data->philos[0]->times_ate = 0;
 	data->philos[0]->left_fork = data->forks[0];
 	data->philos[0]->right_fork = NULL;
@@ -67,7 +67,8 @@ int	create_philos(t_data *data)
 {
 	int	i;
 
-	data->philos = malloc((data->number_of_philosophers + 1) * sizeof(t_philos *));
+	data->philos = malloc((data->number_of_philosophers + 1)
+			* sizeof(t_philos *));
 	if (!data->philos)
 		return (fork_err(data, data->number_of_philosophers), 0);
 	i = 0;
@@ -94,6 +95,4 @@ void	add_params_to_philo(t_data *data, t_philos *philo)
 	philo->full = 0;
 	philo->time_last_meal = 0;
 	philo->time_this_meal = 0;
-	philo->ended_sim = &(data->ended_sim);
-	philo->debt = 0;
 }

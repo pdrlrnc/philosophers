@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philos2.c                                          :+:      :+:    :+:   */
+/*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pedde-so <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/09 14:47:24 by pedde-so          #+#    #+#             */
-/*   Updated: 2025/12/09 14:47:26 by pedde-so         ###   ########.fr       */
+/*   Created: 2025/12/13 12:10:31 by pedde-so          #+#    #+#             */
+/*   Updated: 2025/12/13 12:10:32 by pedde-so         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	eat(t_philos *philo)
 {
 	long	time_now;
 	long	time_to_eat;
-	
+
 	if (!is_full(philo) && has_right_fork(philo))
 	{
 		time_now = now();
@@ -49,14 +49,14 @@ void	eat(t_philos *philo)
 		philo->times_ate++;
 		philo->time_last_meal = philo->time_this_meal;
 		philo->time_this_meal = time_now;
-	       	time_to_eat = philo->time_to_eat;
+		time_to_eat = philo->time_to_eat;
 		pthread_mutex_unlock(&philo->mtx);
 		smart_usleep(philo, ms_to_us(time_to_eat));
 	}
 }
 
 void	drop_forks(t_philos *philo)
-{	
+{
 	if (get_id(philo) % 2 == 0)
 	{
 		if (has_right_fork(philo))

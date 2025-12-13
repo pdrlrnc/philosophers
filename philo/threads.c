@@ -15,7 +15,7 @@
 int	thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op)
 {
 	if (op == CREATE)
-		return (pthread_create(thread, NULL, f, philo)); 
+		return (pthread_create(thread, NULL, f, philo));
 	else if (op == JOIN)
 		return (pthread_join(*thread, NULL));
 	else if (op == DETACH)

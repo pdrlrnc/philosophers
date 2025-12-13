@@ -11,17 +11,13 @@
 # **************************************************************************** #
 
 NAME		=	philo
-SRC_FILES	=	main parser forks philos philos2 simulation time threads writes clean _debug
+SRC_FILES	=	main parser forks philos actions simulation simulation_utils time\
+			threads writes clean safe_checks not_libft really_not_libft
 
 OBJ_DIR		=	obj
 SRC_DIR		=	.
 
-LIBFT_URL	=	https://github.com/pdrlrnc/libft.git
-LIBFT_DIR	=	libft
-LIBFT_LIB	=	$(LIBFT_DIR)/libft.a
-LIBFT_HEADER	=	$(LIBFT_DIR)/libft.h
-
-INCLUDES	=	-I. -I$(LIBFT_DIR)
+INCLUDES	=	-I. 
 
 CC		=	cc -g -O3
 CFLAGS		=	-Wall -Wextra -Werror -pthread -fsanitize=thread $(INCLUDES) -MMD -MP
@@ -45,7 +41,7 @@ DEP			=	$(addprefix $(OBJ_DIR)/, $(addsuffix .d, $(SRC_FILES)))
 
 .PHONY: all clean fclean re
 
-all: $(LIBFT_DIR) $(NAME)
+all: $(NAME)
 	@echo "	\n\
 		$(RED) _______ _   _ ___          _________ ___ _______ _   _ _____ __________ $(DEF_COLOUR)\n\
 		$(ORANGE)(   _   ) | | (   )   /\   / _ \  ___) _ (   _   ) | | |  ___)  _ \  ___)$(DEF_COLOUR)\n\
@@ -55,8 +51,8 @@ all: $(LIBFT_DIR) $(NAME)
 		$(INDIGO) |_| |_||_| |_(___)_/    \_\___/_____)___/|_| |_||_| |_|_____)_|  /_____)$(DEF_COLOUR)\n "
 
 
-$(NAME): $(OBJ) $(LIBFT_LIB)
-	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT_LIB) -o $(NAME)
+$(NAME): $(OBJ) 
+	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -66,20 +62,14 @@ $(OBJ_DIR):
 	@echo "Compiling philosophers..."
 	@mkdir -p $(OBJ_DIR)
 
-$(LIBFT_DIR):
-	@git clone --quiet --depth 1 $(LIBFT_URL) $(LIBFT_DIR)
 
-$(LIBFT_LIB): | $(LIBFT_DIR) headers
-	@$(MAKE) --no-print-directory -C $(LIBFT_DIR)
-
-headers: $(LIBFT_HEADER) philo.h
+headers: philo.h
 
 clean:
 	@$(RM) $(OBJ_DIR)
 	@$(RM) tags
 
 fclean: clean
-	@$(RM) -rf $(LIBFT_DIR)
 	@$(RM) $(NAME)
 
 re: fclean all

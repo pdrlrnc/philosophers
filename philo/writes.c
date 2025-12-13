@@ -15,6 +15,7 @@
 t_mtx	*write_lock(void)
 {
 	static t_mtx	mtx;
+
 	return (&mtx);
 }
 

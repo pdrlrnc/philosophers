@@ -12,16 +12,6 @@
 
 #include "philo.h"
 
-int	ended_sim(t_data *data)
-{
-	int	ended_sim;
-
-	pthread_mutex_lock(&data->mtx);
-	ended_sim = data->ended_sim;
-	pthread_mutex_unlock(&data->mtx);
-	return (ended_sim);
-}
-
 void	simulate(t_data *data)
 {
 	int		i;
@@ -44,6 +34,33 @@ void	simulate(t_data *data)
 	clean(data);
 }
 
+void	*run(void *arg)
+{
+	t_philos	*philo;
+	int			i;
+
+	philo = (t_philos *)arg;
+	i = 0;
+	while (is_alive(philo) && !is_full(philo))
+	{
+		if (is_alive(philo) && !is_full(philo)
+			&& (has_right_fork(philo) || (!has_right_fork(philo) && !i)))
+			take_forks(philo);
+		if (is_alive(philo) && !is_full(philo))
+			eat(philo);
+		check_times_ate(philo);
+		drop_forks(philo);
+		if (is_alive(philo) && !is_full(philo))
+			_sleep(philo);
+		if (is_alive(philo) && !is_full(philo))
+			think(philo);
+		i++;
+	}
+	if (!has_right_fork(philo))
+		pthread_mutex_unlock(&philo->left_fork->mtx);
+	return (NULL);
+}
+
 void	*ref(void *arg)
 {
 	t_data	*data;
@@ -62,39 +79,6 @@ void	*ref(void *arg)
 	return (NULL);
 }
 
-int	check_if_all_full(t_data *data)
-{
-	int	i;
-	int	full;
-
-	i = 0;
-	full = 0;
-	while (i < data->number_of_philosophers)
-	{
-		pthread_mutex_lock(&data->philos[i]->mtx);
-		full = data->philos[i]->full;
-		pthread_mutex_unlock(&data->philos[i]->mtx);
-		if (!full)
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-void	kill_all(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->number_of_philosophers)
-	{
-		pthread_mutex_lock(&data->philos[i]->mtx);
-		data->philos[i]->alive = 0;
-		pthread_mutex_unlock(&data->philos[i]->mtx);
-		i++;
-	}
-}
-
 int	check_if_dead(t_data *data)
 {
 	int	i;
@@ -109,138 +93,16 @@ int	check_if_dead(t_data *data)
 	return (0);
 }
 
-void	*run(void *arg)
+void	kill_all(t_data *data)
 {
-	t_philos	*philo;
-	int			i;
+	int	i;
 
-	philo = (t_philos *)arg;
 	i = 0;
-	while (is_alive(philo) && !is_full(philo))
+	while (i < data->number_of_philosophers)
 	{
-		check_if_hungry(philo);
-		if (is_alive(philo) && !is_full(philo) && 
-			(has_right_fork(philo) || (!has_right_fork(philo) && !i)))
-			take_forks(philo);
-		check_if_hungry(philo);
-		if (is_alive(philo) && !is_full(philo))
-			eat(philo);
-		check_times_ate(philo);
-		drop_forks(philo);
-		check_if_hungry(philo);
-		if (is_alive(philo) && !is_full(philo))
-			_sleep(philo);
-		if (is_alive(philo) && !is_full(philo))
-			think(philo);
+		pthread_mutex_lock(&data->philos[i]->mtx);
+		data->philos[i]->alive = 0;
+		pthread_mutex_unlock(&data->philos[i]->mtx);
 		i++;
 	}
-	if (!has_right_fork(philo))
-		pthread_mutex_unlock(&philo->left_fork->mtx);
-	return (NULL);
-}
-
-int	has_right_fork(t_philos *philo)
-{
-	t_fork	*right_fork;
-
-	pthread_mutex_lock(&philo->mtx);
-	right_fork = philo->right_fork;
-	pthread_mutex_unlock(&philo->mtx);
-	if (right_fork)
-		return (1);
-	return (0);
-}
-
-void	check_times_ate(t_philos *philo)
-{
-	pthread_mutex_lock(&philo->mtx);
-	if (philo->number_of_eats > 0)
-	{
-		if (philo->number_of_eats == philo->times_ate)
-		{
-			pthread_mutex_unlock(&philo->mtx);
-			_write(now(), philo, ACT_5, 9);
-			pthread_mutex_lock(&philo->mtx);
-			philo->full = 1;
-		}
-	}
-	pthread_mutex_unlock(&philo->mtx);
-}
-
-int	check_if_hungry(t_philos *philo)
-{
-	pthread_mutex_lock(&philo->mtx);
-	if (!philo->alive)
-		return (pthread_mutex_unlock(&philo->mtx), 1);
-	if (!philo->full)
-	{
-		if ((now() - philo->time_this_meal) >= philo->time_to_die)
-		{
-			pthread_mutex_unlock(&philo->mtx);
-			_write(now(), philo, ACT_6, 9);
-			pthread_mutex_lock(&philo->mtx);
-			philo->alive = 0;
-			pthread_mutex_unlock(&philo->mtx);
-			return (1);
-		}
-	}
-	pthread_mutex_unlock(&philo->mtx);
-	return (0);
-}
-
-int	get_id(t_philos *philo)
-{
-	int	id;
-
-	pthread_mutex_lock(&philo->mtx);
-	id = philo->id;
-	pthread_mutex_unlock(&philo->mtx);
-	return (id);
-}
-
-int	is_full(t_philos *philo)
-{
-	int	full;
-
-	pthread_mutex_lock(&philo->mtx);
-	full = philo->full;
-	pthread_mutex_unlock(&philo->mtx);
-	return (full);
-}
-
-int	is_alive(t_philos *philo)
-{
-	int	alive;
-
-	pthread_mutex_lock(&philo->mtx);
-	alive = philo->alive;
-	pthread_mutex_unlock(&philo->mtx);
-	return (alive);
-}
-
-int	get_time_to_sleep(t_philos *philo)
-{
-	int	time_to_sleep;
-
-	pthread_mutex_lock(&philo->mtx);
-	time_to_sleep = philo->time_to_sleep;
-	pthread_mutex_unlock(&philo->mtx);
-	return (time_to_sleep);
-}
-
-long	get_debt(t_philos *philo)
-{
-	int	debt;
-
-	pthread_mutex_lock(&philo->mtx);
-	debt = philo->debt;
-	pthread_mutex_unlock(&philo->mtx);
-	return (debt);
-}
-
-void	kill_philo(t_philos *philo)
-{
-	pthread_mutex_lock(&philo->mtx);
-	philo->alive = 0;
-	pthread_mutex_unlock(&philo->mtx);
 }
