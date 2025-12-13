@@ -98,6 +98,7 @@ t_fork		**fork_err(t_data *data, int i);
 //philos.c
 t_philos	**init_philos(t_data *data);
 t_philos	**philos_err(t_data *data, int i);
+t_philos	**single_philo(t_data *data);
 int			create_philos(t_data *data);
 void		add_params_to_philo(t_data *data, t_philos *philo);
 
@@ -120,6 +121,7 @@ int			check_if_hungry(t_philos *philo);
 int			check_if_dead(t_data *data);
 int			sim_has_ended(t_philos *philo);
 int			check_if_all_full(t_data *data);
+int			has_right_fork(t_philos *philo);
 void		check_times_ate(t_philos *philo);
 void		*ref(void *arg);
 void		simulate(t_data *data);

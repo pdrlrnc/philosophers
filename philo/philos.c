@@ -19,6 +19,8 @@ t_philos	**init_philos(t_data *data)
 	if (!create_philos(data))
 		return (NULL);
 	i = 0;
+	if (data->number_of_philosophers == 1)
+		return (single_philo(data));
 	while (i < data->number_of_philosophers)
 	{
 		(*(data->philos + i))->id = i;
@@ -32,6 +34,20 @@ t_philos	**init_philos(t_data *data)
 		if (pthread_mutex_init(&((*(data->philos + i))->mtx), NULL))
 			return (free(*(data->philos + i)), philos_err(data, i));
 		i++;
+	}
+	return (data->philos);
+}
+
+t_philos	**single_philo(t_data *data)
+{
+	data->philos[0]->id = 0;	
+	data->philos[0]->times_ate = 0;
+	data->philos[0]->left_fork = data->forks[0];
+	data->philos[0]->right_fork = NULL;
+	if (pthread_mutex_init(&data->philos[0]->mtx, NULL))
+	{
+		free(data->philos[0]);
+		return (fork_err(data, 1), NULL);
 	}
 	return (data->philos);
 }

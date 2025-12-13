@@ -112,12 +112,15 @@ int	check_if_dead(t_data *data)
 void	*run(void *arg)
 {
 	t_philos	*philo;
+	int			i;
 
 	philo = (t_philos *)arg;
+	i = 0;
 	while (is_alive(philo) && !is_full(philo))
 	{
 		check_if_hungry(philo);
-		if (is_alive(philo) && !is_full(philo))
+		if (is_alive(philo) && !is_full(philo) && 
+			(has_right_fork(philo) || (!has_right_fork(philo) && !i)))
 			take_forks(philo);
 		check_if_hungry(philo);
 		if (is_alive(philo) && !is_full(philo))
@@ -129,8 +132,23 @@ void	*run(void *arg)
 			_sleep(philo);
 		if (is_alive(philo) && !is_full(philo))
 			think(philo);
+		i++;
 	}
+	if (!has_right_fork(philo))
+		pthread_mutex_unlock(&philo->left_fork->mtx);
 	return (NULL);
+}
+
+int	has_right_fork(t_philos *philo)
+{
+	t_fork	*right_fork;
+
+	pthread_mutex_lock(&philo->mtx);
+	right_fork = philo->right_fork;
+	pthread_mutex_unlock(&philo->mtx);
+	if (right_fork)
+		return (1);
+	return (0);
 }
 
 void	check_times_ate(t_philos *philo)
