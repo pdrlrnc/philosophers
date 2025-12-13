@@ -43,13 +43,6 @@ typedef struct s_fork
 	t_mtx	mtx;
 }	t_fork;
 
-typedef struct s_referee
-{
-	int			id;
-	int			still_going;
-	t_mtx	mtx;
-}	t_referee;
-
 typedef struct s_philos
 {
 	int		id;
@@ -83,7 +76,6 @@ typedef struct s_data
 	t_fork		**forks;
 	t_philos	**philos;
 	pthread_t	ref;
-	t_referee	**referees;
 }	t_data;
 
 typedef enum e_ops
@@ -149,9 +141,12 @@ int			thread(pthread_t *thread, void *(*f)(void *), void *philo, t_ops op);
 t_mtx		*write_lock(void);
 void		_write(long time, t_philos *philo, char *str, int strlen);
 
+//clean
+void		clean(t_data *data);
 
 //_debug.c -> delete when finished
 void		print_table(t_data *data);
 void		print_data_vars(t_data *data);
+
 
 #endif

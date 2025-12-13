@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   writes.c                                           :+:      :+:    :+:   */
+/*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pedde-so <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/09 17:21:05 by pedde-so          #+#    #+#             */
-/*   Updated: 2025/12/09 17:21:06 by pedde-so         ###   ########.fr       */
+/*   Created: 2025/12/12 15:34:44 by pedde-so          #+#    #+#             */
+/*   Updated: 2025/12/12 15:34:45 by pedde-so         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_mtx	*write_lock(void)
+void	clean(t_data *data)
 {
-	static t_mtx	mtx;
-	return (&mtx);
-}
+	int	i;
 
-void	_write(long time, t_philos *philo, char *str, int strlen)
-{
-	pthread_mutex_lock(write_lock());
-	ft_putnbr_fd(time, STDOUT_FILENO);
-	write(STDOUT_FILENO, " ", 1);
-	ft_putnbr_fd(get_id(philo) + 1, STDOUT_FILENO);
-	write(STDOUT_FILENO, str, strlen);
-	if (is_alive(philo))
-		pthread_mutex_unlock(write_lock());
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
+		pthread_mutex_destroy(&data->philos[i]->mtx);
+		pthread_mutex_destroy(&data->forks[i]->mtx);
+		free(data->forks[i]);
+		free(data->philos[i]);
+		i++;
+	}
+	pthread_mutex_destroy(write_lock());
+	pthread_mutex_destroy(&data->mtx);
+	free(data->forks);
+	free(data->philos);
+	free(data);
 }

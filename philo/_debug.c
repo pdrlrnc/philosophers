@@ -25,8 +25,6 @@ void	print_table(t_data *data)
 		ft_putnbr_fd(data->philos[i]->left_fork->id, STDOUT_FILENO);
 		write(STDOUT_FILENO, ") and right fork (", 18);
 		ft_putnbr_fd(data->philos[i]->right_fork->id, STDOUT_FILENO);
-		write(STDOUT_FILENO, "). has also a referee (", 23);
-		ft_putnbr_fd(data->referees[i]->id, STDOUT_FILENO);
 		write(STDOUT_FILENO, ").\n", 3);
 		i++;
 	}

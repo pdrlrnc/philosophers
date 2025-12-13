@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME		=	philo
-SRC_FILES	=	main parser forks philos philos2 simulation time threads writes _debug
+SRC_FILES	=	main parser forks philos philos2 simulation time threads writes clean _debug
 
 OBJ_DIR		=	obj
 SRC_DIR		=	.
@@ -24,7 +24,7 @@ LIBFT_HEADER	=	$(LIBFT_DIR)/libft.h
 INCLUDES	=	-I. -I$(LIBFT_DIR)
 
 CC		=	cc -g -O3
-CFLAGS		=	-Wall -Wextra -Werror -pthread $(INCLUDES) -MMD -MP
+CFLAGS		=	-Wall -Wextra -Werror -pthread -fsanitize=thread $(INCLUDES) -MMD -MP
 RM		=	rm -rf
 
 RED=\033[0;31m

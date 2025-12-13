@@ -26,7 +26,6 @@ void	simulate(t_data *data)
 {
 	int		i;
 
-	print_data_vars(data);
 	data->started_sim_time = start();
 	i = 0;
 	thread(&data->ref, ref, data, CREATE);
@@ -42,6 +41,7 @@ void	simulate(t_data *data)
 		i++;
 	}
 	thread(&data->ref, NULL, NULL, JOIN);
+	clean(data);
 }
 
 void	*ref(void *arg)
@@ -103,13 +103,10 @@ int	check_if_dead(t_data *data)
 	int	i;
 
 	i = 0;
-	while (data->philos[i])
+	while (i < data->number_of_philosophers)
 	{
 		if (check_if_hungry(data->philos[i]))
-		{
-			data->ended_sim = 1;
 			return (1);
-		}
 		i++;
 	}
 	return (0);
@@ -120,23 +117,19 @@ void	*run(void *arg)
 	t_philos	*philo;
 
 	philo = (t_philos *)arg;
-	while (!is_full(philo) && is_alive(philo))
+	while (is_alive(philo) && !is_full(philo))
 	{
-		if (!sim_has_ended(philo))
-			take_forks(philo);
-		if (!sim_has_ended(philo))
-			check_if_hungry(philo);
-		if (!sim_has_ended(philo))
-			eat(philo);
-		if (!sim_has_ended(philo))
-			check_times_ate(philo);
+		check_if_hungry(philo);
+		take_forks(philo);
+		check_if_hungry(philo);
+		eat(philo);
+		check_times_ate(philo);
 		drop_forks(philo);
+		check_if_hungry(philo);
 		if (!is_full(philo))
 		{
-			if (!sim_has_ended(philo))
-				_sleep(philo);
-			if (!sim_has_ended(philo))
-				think(philo);
+			_sleep(philo);
+			think(philo);
 		}
 	}
 	return (NULL);
@@ -167,13 +160,10 @@ int	check_if_hungry(t_philos *philo)
 	{
 		if ((now() - philo->time_this_meal) >= philo->time_to_die)
 		{
-			pthread_mutex_unlock(&philo->mtx);
-			_write(now(), philo, ACT_6, 9);
-			pthread_mutex_lock(&philo->mtx);
 			philo->alive = 0;
 			pthread_mutex_unlock(&philo->mtx);
+			_write(now(), philo, ACT_6, 9);
 			return (1);
-
 		}
 	}
 	pthread_mutex_unlock(&philo->mtx);
@@ -198,16 +188,6 @@ int	is_full(t_philos *philo)
 	full = philo->full;
 	pthread_mutex_unlock(&philo->mtx);
 	return (full);
-}
-
-int	sim_has_ended(t_philos *philo)
-{
-	int	ended_sim;
-
-	pthread_mutex_lock(&philo->mtx);
-	ended_sim = *(philo->ended_sim);
-	pthread_mutex_unlock(&philo->mtx);
-	return (ended_sim);
 }
 
 int	is_alive(t_philos *philo)

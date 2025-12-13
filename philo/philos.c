@@ -31,11 +31,6 @@ t_philos	**init_philos(t_data *data)
 		(*(data->philos + i))->right_fork = *(data->forks + i);
 		if (pthread_mutex_init(&((*(data->philos + i))->mtx), NULL))
 			return (free(*(data->philos + i)), philos_err(data, i));
-		if (pthread_mutex_init(&((*(data->referees + i))->mtx), NULL))
-		{
-			pthread_mutex_destroy(&((*(data->philos + i))->mtx));
-			return (free(*(data->philos + i)), philos_err(data, i));
-		}
 		i++;
 	}
 	return (data->philos);
@@ -46,13 +41,8 @@ t_philos	**philos_err(t_data *data, int i)
 	while (--i >= 0)
 	{
 		pthread_mutex_destroy(&((*(data->philos + i))->mtx));
-		if (*(data->referees + i))
-			pthread_mutex_destroy(&((*(data->referees + i))->mtx));
 		free(*(data->philos + i));
-		if (*(data->referees + i))
-			free(*(data->referees + i));
 	}
-	free(data->referees);
 	fork_err(data, data->number_of_philosophers);
 	return (NULL);
 }
@@ -62,29 +52,18 @@ int	create_philos(t_data *data)
 	int	i;
 
 	data->philos = malloc((data->number_of_philosophers + 1) * sizeof(t_philos *));
-	data->referees = malloc((data->number_of_philosophers + 1) * sizeof(t_referee *));
 	if (!data->philos)
 		return (fork_err(data, data->number_of_philosophers), 0);
-	if (!data->referees)
-	{
-		free(data->philos);
-		return (fork_err(data, data->number_of_philosophers), 0);
-	}
 	i = 0;
 	while (i < data->number_of_philosophers)
 	{
 		*(data->philos + i) = malloc(sizeof(t_philos));
 		if (!*(data->philos + i))
 			return (philos_err(data, i), 0);
-		*(data->referees + i) = malloc(sizeof(t_referee));
-		if (!*(data->referees + i))
-			return (philos_err(data, i + 1), 0);
-		(*(data->referees + i))->id = i;
 		add_params_to_philo(data, *(data->philos + i));
 		i++;
 	}
 	data->philos[i] = NULL;
-	data->referees[i] = NULL;
 	return (1);
 }
 
