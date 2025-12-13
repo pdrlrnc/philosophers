@@ -21,10 +21,12 @@ t_mtx	*write_lock(void)
 void	_write(long time, t_philos *philo, char *str, int strlen)
 {
 	pthread_mutex_lock(write_lock());
-	ft_putnbr_fd(time, STDOUT_FILENO);
-	write(STDOUT_FILENO, " ", 1);
-	ft_putnbr_fd(get_id(philo) + 1, STDOUT_FILENO);
-	write(STDOUT_FILENO, str, strlen);
 	if (is_alive(philo))
-		pthread_mutex_unlock(write_lock());
+	{
+		ft_putnbr_fd(time, STDOUT_FILENO);
+		write(STDOUT_FILENO, " ", 1);
+		ft_putnbr_fd(get_id(philo) + 1, STDOUT_FILENO);
+		write(STDOUT_FILENO, str, strlen);
+	}
+	pthread_mutex_unlock(write_lock());
 }

@@ -54,10 +54,7 @@ void	*ref(void *arg)
 	{
 		data->ended_sim = check_if_dead(data);
 		if (data->ended_sim)
-		{
 			kill_all(data);
-			pthread_mutex_unlock(write_lock());
-		}
 		else
 			data->ended_sim = check_if_all_full(data);
 	}
@@ -120,17 +117,18 @@ void	*run(void *arg)
 	while (is_alive(philo) && !is_full(philo))
 	{
 		check_if_hungry(philo);
-		take_forks(philo);
+		if (is_alive(philo) && !is_full(philo))
+			take_forks(philo);
 		check_if_hungry(philo);
-		eat(philo);
+		if (is_alive(philo) && !is_full(philo))
+			eat(philo);
 		check_times_ate(philo);
 		drop_forks(philo);
 		check_if_hungry(philo);
-		if (!is_full(philo))
-		{
+		if (is_alive(philo) && !is_full(philo))
 			_sleep(philo);
+		if (is_alive(philo) && !is_full(philo))
 			think(philo);
-		}
 	}
 	return (NULL);
 }
@@ -160,9 +158,11 @@ int	check_if_hungry(t_philos *philo)
 	{
 		if ((now() - philo->time_this_meal) >= philo->time_to_die)
 		{
-			philo->alive = 0;
 			pthread_mutex_unlock(&philo->mtx);
 			_write(now(), philo, ACT_6, 9);
+			pthread_mutex_lock(&philo->mtx);
+			philo->alive = 0;
+			pthread_mutex_unlock(&philo->mtx);
 			return (1);
 		}
 	}
