@@ -41,21 +41,3 @@ long	ms_to_us(long ms)
 {
 	return (ms * 1000);
 }
-
-void	smart_usleep(t_philos *philo, long us)
-{
-	long	mini_sleep;
-	long	slept;
-
-	mini_sleep = 100;
-	slept = 0;
-	while (slept < us)
-	{
-		if (!is_alive(philo))
-			break ;
-		if ((us - slept) < mini_sleep)
-			mini_sleep = us - slept;
-		usleep(mini_sleep);
-		slept += mini_sleep;
-	}
-}

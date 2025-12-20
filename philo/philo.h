@@ -132,7 +132,6 @@ int			get_time_to_sleep(t_philos *philo);
 long		now(void);
 long		start(void);
 long		ms_to_us(long ms);
-void		smart_usleep(t_philos *philo, long us);
 
 //threads.c
 int			thread(pthread_t *thread, void *(*f)(void *),
@@ -141,7 +140,6 @@ int			thread(pthread_t *thread, void *(*f)(void *),
 //writes.c
 t_mtx		*write_lock(void);
 void		_write(long time, t_philos *philo, char *str, int strlen);
-void	_write_debug_forks(long time, t_philos *philo, t_fork *fork);
 
 //clean
 void		clean(t_data *data);

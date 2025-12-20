@@ -20,7 +20,7 @@ SRC_DIR		=	.
 INCLUDES	=	-I. 
 
 CC		=	cc -g -O3
-CFLAGS		=	-Wall -Wextra -Werror -pthread -fsanitize=thread $(INCLUDES) -MMD -MP
+CFLAGS		=	-Wall -Wextra -Werror -pthread $(INCLUDES) -MMD -MP
 RM		=	rm -rf
 
 RED=\033[0;31m

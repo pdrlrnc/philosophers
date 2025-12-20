@@ -38,20 +38,20 @@ void	take_forks(t_philos *philo)
 
 void	eat(t_philos *philo)
 {
-	long	time_now;
 	long	time_to_eat;
 
 	if (!is_full(philo) && has_right_fork(philo))
 	{
-		time_now = now();
-		_write(time_now, philo, ACT_1, 11);
+		_write(now(), philo, ACT_1, 11);
 		pthread_mutex_lock(&philo->mtx);
 		philo->times_ate++;
-		philo->time_last_meal = philo->time_this_meal;
-		philo->time_this_meal = time_now;
 		time_to_eat = philo->time_to_eat;
 		pthread_mutex_unlock(&philo->mtx);
 		usleep(ms_to_us(time_to_eat));
+		pthread_mutex_lock(&philo->mtx);
+		philo->time_last_meal = philo->time_this_meal;
+		philo->time_this_meal = now();
+		pthread_mutex_unlock(&philo->mtx);
 	}
 }
 
