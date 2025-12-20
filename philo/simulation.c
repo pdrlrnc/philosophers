@@ -56,7 +56,7 @@ void	*run(void *arg)
 			think(philo);
 		i++;
 	}
-	if (!has_right_fork(philo))
+	if (!has_right_fork(philo) && philo->pickd_frk)
 		pthread_mutex_unlock(&philo->left_fork->mtx);
 	return (NULL);
 }

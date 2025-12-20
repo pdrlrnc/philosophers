@@ -16,13 +16,15 @@ void	take_forks(t_philos *philo)
 {
 	if (get_id(philo) % 2 == 0)
 	{
-		usleep(1000);
+		usleep(500);
 		if (has_right_fork(philo))
 		{
 			pthread_mutex_lock(&philo->right_fork->mtx);
 			_write(now(), philo, ACT_2, 18);
 		}
 		pthread_mutex_lock(&philo->left_fork->mtx);
+		if (!has_right_fork(philo))
+			philo->pickd_frk = 1;
 		_write(now(), philo, ACT_2, 18);
 	}
 	else
@@ -42,8 +44,6 @@ void	eat(t_philos *philo)
 	if (!is_full(philo) && has_right_fork(philo))
 	{
 		time_now = now();
-		pthread_mutex_lock(&philo->mtx);
-		pthread_mutex_unlock(&philo->mtx);
 		_write(time_now, philo, ACT_1, 11);
 		pthread_mutex_lock(&philo->mtx);
 		philo->times_ate++;
@@ -51,7 +51,7 @@ void	eat(t_philos *philo)
 		philo->time_this_meal = time_now;
 		time_to_eat = philo->time_to_eat;
 		pthread_mutex_unlock(&philo->mtx);
-		smart_usleep(philo, ms_to_us(time_to_eat));
+		usleep(ms_to_us(time_to_eat));
 	}
 }
 
@@ -77,12 +77,24 @@ void	_sleep(t_philos *philo)
 	if (has_right_fork(philo))
 	{
 		_write(now(), philo, ACT_3, 13);
-		smart_usleep(philo, ms_to_us(get_time_to_sleep(philo)));
+		usleep(ms_to_us(get_time_to_sleep(philo)));
 	}
 }
 
 void	think(t_philos *philo)
 {
+	int	delay;
+
+	pthread_mutex_lock(&philo->mtx);
+	if (philo->number_of_philosophers % 2 != 0)
+	{
+		delay = (philo->time_to_eat - philo->time_to_sleep);
+		pthread_mutex_unlock(&philo->mtx);
+		if (delay > 0)
+			usleep(ms_to_us(delay));
+	}
+	else
+		pthread_mutex_unlock(&philo->mtx);
 	if (has_right_fork(philo))
 		_write(now(), philo, ACT_4, 13);
 }

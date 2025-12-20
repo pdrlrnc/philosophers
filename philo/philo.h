@@ -58,6 +58,8 @@ typedef struct s_philos
 	long		number_of_eats;
 	int			alive;
 	int			full;
+	int			number_of_philosophers;
+	int			pickd_frk;
 	t_mtx		mtx;
 }	t_philos;
 
@@ -139,6 +141,7 @@ int			thread(pthread_t *thread, void *(*f)(void *),
 //writes.c
 t_mtx		*write_lock(void);
 void		_write(long time, t_philos *philo, char *str, int strlen);
+void	_write_debug_forks(long time, t_philos *philo, t_fork *fork);
 
 //clean
 void		clean(t_data *data);

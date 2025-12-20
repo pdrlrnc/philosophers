@@ -45,17 +45,17 @@ long	ms_to_us(long ms)
 void	smart_usleep(t_philos *philo, long us)
 {
 	long	mini_sleep;
-	long	target;
+	long	slept;
 
-	mini_sleep = 10;
-	target = ms_to_us(now()) + us;
-	while (ms_to_us(now()) < target)
+	mini_sleep = 100;
+	slept = 0;
+	while (slept < us)
 	{
 		if (!is_alive(philo))
 			break ;
-		mini_sleep = target - ms_to_us(now());
-		if (mini_sleep > 10)
-			mini_sleep = 10;
+		if ((us - slept) < mini_sleep)
+			mini_sleep = us - slept;
 		usleep(mini_sleep);
+		slept += mini_sleep;
 	}
 }
